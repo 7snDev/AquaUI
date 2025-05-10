@@ -1,0 +1,100 @@
+#include "core.h"
+
+void init() {
+  if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+    printf("SDL init failed: %s\n", SDL_GetError());
+    throw std::runtime_error(SDL_GetError());
+  }
+
+  if (TTF_Init() != 0) {
+    printf("TTF init failed: %s\n", TTF_GetError());
+    throw std::runtime_error(TTF_GetError());
+  }
+
+  // if (IMG_Init(IMG_INIT_PNG) != 0) {
+  //   printf("IMG init failed: %s\n", IMG_GetError());
+  //   throw std::runtime_error(IMG_GetError());
+  // }
+
+  // if (Mix_Init(MIX_INIT_MP3) != 0) {
+  //   printf("Mix init failed: %s\n", Mix_GetError());
+  //   throw std::runtime_error(Mix_GetError());
+  // }
+}
+
+Window::Window(){
+  init();
+  this->window = SDL_CreateWindow("Hello, World!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+Window::Window(std::string title, int width, int height){
+  init();
+  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+Window::Window(std::string title, int width, int height, int x, int y){
+  init();
+  this->window = SDL_CreateWindow(title.c_str(), x, y, width, height, SDL_WINDOW_SHOWN);
+  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+Window::Window(std::string title){
+  init();
+  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+Window::~Window(){
+  SDL_DestroyWindow(this->window);
+  SDL_DestroyRenderer(this->renderer);
+}
+
+void Window::mainLoop() {
+  SDL_Event event;
+  bool running = true;
+  while (running) {
+    while (SDL_PollEvent(&event) != 0) {
+      if (event.type == SDL_QUIT) running = false;
+      for (auto widget : widgets)
+        widget->handleEvent(&event);
+    }
+    this->update();
+    SDL_Delay(16);
+  }
+}
+
+void Window::update() {
+  SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+  SDL_RenderClear(this->renderer);
+  for (auto widget : widgets)
+    widget->render(this->renderer);
+  SDL_RenderPresent(this->renderer);
+}
+
+void Window::addWidget(Widget* widget) {
+  widgets.push_back(widget);
+}
+
+Widget::Widget(int x, int y, int width, int height) {
+  this->x = x;
+  this->y = y;
+  this->width = width;
+  this->height = height;
+}
+
+Widget::~Widget() {  }
+
+Widget::Widget() {
+  this->x = 0;
+  this->y = 0;
+  this->width = 0;
+  this->height = 0;
+}
+
+void Widget::render(SDL_Renderer* renderer) { 
+  printf("Widget::render not implemented\n");
+}
+
+void Widget::handleEvent(SDL_Event* event) {  }

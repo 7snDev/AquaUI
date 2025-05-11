@@ -8,6 +8,7 @@
   #include <SDL2/SDL_image.h>
   #include <SDL2/SDL_mixer.h>
   #include <stdexcept>
+  #include <filesystem>
 
 
 class Widget {
@@ -25,7 +26,15 @@ class Widget {
 };
 
 class Window {
-  public:
+  private:
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    std::vector<Widget*> widgets;
+    int width, height, x, y;
+    std::string title;
+    TTF_Font* font;
+    int fontSize = 24;
+    public:
     Window();
     Window(std::string title);
     Window(std::string title, int width, int height);
@@ -34,12 +43,24 @@ class Window {
     virtual void mainLoop();
     virtual void update();
     virtual void addWidget(Widget* widget);
-  private:
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    TTF_Font* font;
-    std::vector<Widget*> widgets;
-    int width, height, x, y;
-    std::string title;
+    void setFont(TTF_Font* font) { this->font = font; }
+    void setTitle(std::string title) { this->title = title; }
+    void setWidth(int width) { this->width = width; }
+    void setHeight(int height) { this->height = height; }
+    TTF_Font* getFont() { return this->font; }
+    void setFontSize(int fontSize);
 };
+#endif
+
+#ifdef __linux__
+  #define AQUAUI_PLATFORM "Linux"
+
+#elif _WIN32
+  #define AQUAUI_PLATFORM "Windows"
+
+#elif __APPLE__
+  #define AQUAUI_PLATFORM "MacOS"
+
+#else
+  #define AQUAUI_PLATFORM "Unknown"
 #endif

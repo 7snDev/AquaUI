@@ -19,7 +19,7 @@ include_directories(
 
 add_executable(app
   src/main.cpp
-  src/core.cpp
+  src/core/core.cpp
   src/Widgets/lable.cpp
 )
 

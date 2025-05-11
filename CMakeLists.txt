@@ -21,6 +21,8 @@ add_executable(app
   src/main.cpp
   src/core/core.cpp
   src/Widgets/lable.cpp
+  src/Widgets/button.cpp
+  src/Widgets/textinput.cpp
 )
 
 target_link_libraries(app

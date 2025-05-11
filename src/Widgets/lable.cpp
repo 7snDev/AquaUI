@@ -1,20 +1,12 @@
 #include "lable.h"
 
-Lable::Lable(std::string text, int x, int y, SDL_Color text_Color, SDL_Color background_Color, TTF_Font* font) {
-  this->text = text;
-  this->x = x;
-  this->y = y;
-  this->text_Color = text_Color;
-  this->background_Color = background_Color;
-  this->font = font;
-}
-
-void Lable::render(SDL_Renderer* renderer) {
-  if (this->font == NULL)
-    return;
+void Lable::render(Window* _window) {
+  if (this->font == NULL) {
+    this->font = _window->getFont();
+  }
   SDL_Surface* surface;
   if (this->background_Color.a == 0) {
-    surface = TTF_RenderText_Solid(this->font, this->text.c_str(), this->text_Color);
+    surface = TTF_RenderText_Shaded(this->font, this->text.c_str(), this->text_Color, _window->getBackgroundColor());
   }
   else {
     surface = TTF_RenderText_Shaded(this->font, this->text.c_str(), this->text_Color, this->background_Color);
@@ -25,11 +17,13 @@ void Lable::render(SDL_Renderer* renderer) {
     printf("TTF_RenderText_Shaded failed: %s\n", TTF_GetError());
     throw std::runtime_error(TTF_GetError());
   }
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-  SDL_FreeSurface(surface);
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(_window->getRednerer(), surface);
   SDL_Rect rect = {this->x, this->y, surface->w, surface->h};
-  SDL_SetRenderDrawColor(renderer, this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
-  SDL_RenderFillRect(renderer, &rect);
-  SDL_RenderCopy(renderer, texture, NULL, &rect);
+  this->Width = surface->w;
+  this->Height = surface->h;
+  SDL_SetRenderDrawColor(_window->getRednerer(), this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
+  SDL_RenderFillRect(_window->getRednerer(), &rect);
+  SDL_RenderCopy(_window->getRednerer(), texture, NULL, &rect);
   SDL_DestroyTexture(texture);
+  SDL_FreeSurface(surface);
 }

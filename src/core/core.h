@@ -9,13 +9,17 @@
   #include <SDL2/SDL_mixer.h>
   #include <stdexcept>
   #include <filesystem>
+  #include <functional>
+  #include <unordered_map>
+  #include <vector>
 
-
+class Window;
 class Widget {
-  private:
+  protected:
     int x, y, width, height;
+    TTF_Font* font;
     virtual void handleEvent(SDL_Event* event);
-    virtual void render(SDL_Renderer* renderer);
+    virtual void render(Window* window);
   public:
     Widget(int x, int y, int width, int height);
     Widget();
@@ -34,6 +38,7 @@ class Window {
     std::string title;
     TTF_Font* font;
     int fontSize = 24;
+    SDL_Color background_Color = {0, 0, 0, 255};
     public:
     Window();
     Window(std::string title);
@@ -47,8 +52,12 @@ class Window {
     void setTitle(std::string title) { this->title = title; }
     void setWidth(int width) { this->width = width; }
     void setHeight(int height) { this->height = height; }
-    TTF_Font* getFont() { return this->font; }
+    void setBackgroundColor(SDL_Color color) { this->background_Color = color; }
     void setFontSize(int fontSize);
+    SDL_Color getBackgroundColor() { return this->background_Color; }
+    TTF_Font* getFont() { return this->font; }
+    SDL_Renderer* getRednerer() { return this->renderer; }
+  friend class Widget;
 };
 #endif
 

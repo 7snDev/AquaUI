@@ -84,7 +84,7 @@ std::string getFontDir() {
   throw std::runtime_error("platform not supported");
 }
 
-TTF_Font* searchFont(int FontSize = 50) {
+TTF_Font* searchFont(int FontSize = 24) {
   std::string fontsdir = getFontDir();
   TTF_Font* font = TTF_OpenFont(getFont(fontsdir).c_str(), FontSize);
   if (font != NULL)
@@ -94,14 +94,14 @@ TTF_Font* searchFont(int FontSize = 50) {
 
 Window::Window(){
   init();
-  this->window = SDL_CreateWindow("Hello, World!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+  this->window = SDL_CreateWindow("Hello, World!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
   this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   this->font = searchFont(this->fontSize);
 }
 
 Window::Window(std::string title, int width, int height){
   init();
-  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_HIDDEN);
   this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   this->font = searchFont();
   this->fontSize = 50;
@@ -109,14 +109,14 @@ Window::Window(std::string title, int width, int height){
 
 Window::Window(std::string title, int width, int height, int x, int y){
   init();
-  this->window = SDL_CreateWindow(title.c_str(), x, y, width, height, SDL_WINDOW_SHOWN);
+  this->window = SDL_CreateWindow(title.c_str(), x, y, width, height, SDL_WINDOW_HIDDEN);
   this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   this->font = searchFont(this->fontSize);
 }
 
 Window::Window(std::string title){
   init();
-  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
   this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   this->font = searchFont(this->fontSize);
 }
@@ -131,6 +131,7 @@ Window::~Window(){
 void Window::mainLoop() {
   SDL_Event event;
   bool running = true;
+  SDL_ShowWindow(this->window);
   while (running) {
     while (SDL_PollEvent(&event) != 0) {
       if (event.type == SDL_QUIT) running = false;
@@ -143,10 +144,11 @@ void Window::mainLoop() {
 }
 
 void Window::update() {
-  SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(this->renderer, this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
   SDL_RenderClear(this->renderer);
-  for (auto widget : widgets)
-    widget->render(this->renderer);
+  for (auto widget : widgets) {
+    widget->render(this);
+  }
   SDL_RenderPresent(this->renderer);
 }
 
@@ -154,8 +156,10 @@ void Window::addWidget(Widget* widget) {
   widgets.push_back(widget);
 }
 
-void Window::setFontSize(int fontSize) { this->fontSize = fontSize; 
-  this->font = searchFont(this->fontSize);}
+void Window::setFontSize(int fontSize) {
+  this->fontSize = fontSize; 
+  this->font = searchFont(this->fontSize);
+}
 
 Widget::Widget(int x, int y, int width, int height) {
   this->x = x;
@@ -173,8 +177,6 @@ Widget::Widget() {
   this->height = 0;
 }
 
-void Widget::render(SDL_Renderer* renderer) { 
-  printf("Widget::render not implemented\n");
-}
+void Widget::render(Window* window) {  }
 
 void Widget::handleEvent(SDL_Event* event) {  }

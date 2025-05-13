@@ -143,6 +143,14 @@ void Window::mainLoop() {
   }
 }
 
+Widget *Window::getWidget(std::string id) {
+  for (auto widget : widgets) {
+    if (widget->id == id)
+      return widget;
+  }
+  return nullptr;
+}
+
 void Window::update() {
   SDL_SetRenderDrawColor(this->renderer, this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
   SDL_RenderClear(this->renderer);
@@ -150,6 +158,12 @@ void Window::update() {
     widget->render(this);
   }
   SDL_RenderPresent(this->renderer);
+}
+
+void Window::updateWindow() {
+  SDL_SetWindowSize(this->window, this->width, this->height);
+  SDL_SetWindowPosition(this->window, this->x, this->y);
+  SDL_SetWindowTitle(this->window, this->title.c_str());
 }
 
 void Window::addWidget(Widget* widget) {

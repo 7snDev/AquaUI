@@ -24,6 +24,7 @@ class Lable : public Widget {
     int getHeight() { return this->Height; }
     int getX() { return this->x; }
     int getY() { return this->y; }
+    std::string getText() { return this->text; }
 };
 
 #endif

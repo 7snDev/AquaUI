@@ -77,9 +77,6 @@ std::string getFontDir() {
   } else if (AQUAUI_PLATFORM == "Windows")
   {
     return "C:\\Windows\\Fonts\\";
-  } else if (AQUAUI_PLATFORM == "MacOS")
-  {
-    return "/Library/Fonts/";
   }
   throw std::runtime_error("platform not supported");
 }
@@ -94,29 +91,7 @@ TTF_Font* searchFont(int FontSize = 24) {
 
 Window::Window(){
   init();
-  this->window = SDL_CreateWindow("Hello, World!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
-  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  this->font = searchFont(this->fontSize);
-}
-
-Window::Window(std::string title, int width, int height){
-  init();
-  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_HIDDEN);
-  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  this->font = searchFont();
-  this->fontSize = 50;
-}
-
-Window::Window(std::string title, int width, int height, int x, int y){
-  init();
-  this->window = SDL_CreateWindow(title.c_str(), x, y, width, height, SDL_WINDOW_HIDDEN);
-  this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  this->font = searchFont(this->fontSize);
-}
-
-Window::Window(std::string title){
-  init();
-  this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
+  this->window = SDL_CreateWindow("AquaUI", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
   this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   this->font = searchFont(this->fontSize);
 }
@@ -129,6 +104,7 @@ Window::~Window(){
 }
 
 void Window::mainLoop() {
+  this->updateWindow();
   SDL_Event event;
   bool running = true;
   SDL_ShowWindow(this->window);
@@ -161,13 +137,18 @@ void Window::update() {
 }
 
 void Window::updateWindow() {
-  SDL_SetWindowSize(this->window, this->width, this->height);
-  SDL_SetWindowPosition(this->window, this->x, this->y);
-  SDL_SetWindowTitle(this->window, this->title.c_str());
-}
-
-void Window::addWidget(Widget* widget) {
-  widgets.push_back(widget);
+  if (this->width  > 0 && this->height > 0)
+    SDL_SetWindowSize(this->window, this->width, this->height);
+  if (this->x > 0 && this->y > 0)
+    SDL_SetWindowPosition(this->window, this->x, this->y);
+  if (this->icon != nullptr)
+    SDL_SetWindowIcon(this->window, this->icon);
+  if (title != "")
+    SDL_SetWindowTitle(this->window, this->title.c_str());
+  if (this->background_Color.a >= 0)
+    SDL_SetWindowOpacity(this->window, this->background_Color.a / 255.0f);
+  SDL_SetWindowResizable(this->window, SDL_bool(this->resizable));
+  SDL_SetWindowFullscreen(this->window, this->fullscreen);
 }
 
 void Window::setFontSize(int fontSize) {
@@ -175,22 +156,5 @@ void Window::setFontSize(int fontSize) {
   this->font = searchFont(this->fontSize);
 }
 
-Widget::Widget(int x, int y, int width, int height) {
-  this->x = x;
-  this->y = y;
-  this->width = width;
-  this->height = height;
-}
-
-Widget::~Widget() {  }
-
-Widget::Widget() {
-  this->x = 0;
-  this->y = 0;
-  this->width = 0;
-  this->height = 0;
-}
-
-void Widget::render(Window* window) {  }
-
-void Widget::handleEvent(SDL_Event* event) {  }
+void Widget::handleEvent(SDL_Event* event) {}
+void Widget::render(Window* window) {}

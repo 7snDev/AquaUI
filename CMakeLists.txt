@@ -23,10 +23,9 @@ include_directories(
 add_executable(app
   src/main.cpp
   src/core/core.cpp
-  src/core/xmlBuilder.cpp
-  src/Widgets/lable.cpp
-  src/Widgets/button.cpp
-  src/Widgets/textinput.cpp
+  # src/core/xmlBuilder.cpp
+  src/Widgets/Label.cpp
+  src/Widgets/Button.cpp
 )
 
 target_link_libraries(app

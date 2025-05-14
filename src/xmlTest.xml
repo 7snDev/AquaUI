@@ -1,4 +1,0 @@
-<Window version="0.0.1 pre-alpha" title="XML Window" width="300" height="400" x="500" y="600" backgroundColor="000, 255, 173, 255" font_size="24">
-  <Button text="Button 1" x="10" y="10" backgroundColor="255, 0, 0, 255" color="255, 255, 255, 255" id="button1" />
-  <Lable text="Lable 1" x="100" y="200" backgroundColor="255, 0, 0, 255" color="255, 255, 255, 255" id="lable1" />
-</Window>

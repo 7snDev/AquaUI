@@ -18,12 +18,27 @@ void Label::render(Window* window) {
     throw std::runtime_error(TTF_GetError());
   }
   SDL_Texture* texture = SDL_CreateTextureFromSurface(this->getRenderer(window), surface);
-  SDL_Rect rect = {this->x, this->y, surface->w, surface->h};
+  SDL_Rect paddingRect = {this->x - this->padding, this->y - this->padding, surface->w + this->padding + this->padding, surface->h + this->padding + this->padding};
+  SDL_Rect rect;
+  if (this->alignment == Alignment::LEFT)
+    rect = {this->x - this->padding, this->y, surface->w, surface->h};
+  else if (this->alignment == Alignment::RIGHT)
+    rect = {this->x + this->padding, this->y, surface->w, surface->h};
+  else
+    rect = {this->x, this->y, surface->w, surface->h};
+  
+  
   this->width = surface->w;
   this->height = surface->h;
+  SDL_SetRenderDrawColor(this->getRenderer(window), this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
+  SDL_RenderFillRect(this->getRenderer(window), &paddingRect);
   SDL_SetRenderDrawColor(this->getRenderer(window), this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
   SDL_RenderFillRect(this->getRenderer(window), &rect);
   SDL_RenderCopy(this->getRenderer(window), texture, NULL, &rect);
   SDL_DestroyTexture(texture);
   SDL_FreeSurface(surface);
+}
+
+void Label::setPadding(int padding_) {
+  this->padding = padding_;
 }

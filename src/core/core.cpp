@@ -97,8 +97,8 @@ Window::Window(){
 }
 
 Window::~Window(){
-  SDL_DestroyWindow(this->window);
   SDL_DestroyRenderer(this->renderer);
+  SDL_DestroyWindow(this->window);
   TTF_Quit();
   SDL_Quit();
 }

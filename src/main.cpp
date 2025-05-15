@@ -1,39 +1,29 @@
 #include <iostream>
 #include "aquaui.h"
 
-void handlePress(Label* label) {
-  if (label->getText() == "Hello World!")
-    label->setText("Goodbye World!");
-  else 
-    label->setText("Hello World!");
+void textChanged(Label* label, TextInput* text_input) {
+  label->setText("Hello, " + text_input->getText());
 }
 
 int main(int argc, char* argv[]) {
   Window window;
   Label label;
-  Button button;
+  TextInput text_input;
   Callback* callback = new Callback();
+  callback->bind(textChanged, &label, &text_input);
   window.setBackgroundColor({33, 66, 55, 255});
 
   label.setText("Hello World!");
   label.setColor({255, 255, 255, 255});
+  label.setHoverColor({255, 255, 255, 255});
   window.addWidget(&label);
   
-  callback->bind(handlePress, &label);
-  button.setText("Press");
-  button.setCallback(callback);
-  button.setPressColor({255, 0, 0, 255});
-  button.setPadding(10);
-  button.setAlignment(Alignment::CENTER);
-  for (int i = 0; i < 4; i++) {
-    button.setBorderColor({255, 255, 255, 255}, i);
-    button.setBorderWidth(5, i);
-  }
-  button.setColor({255, 255, 255, 255});
-  button.setPos(50, 50);
-  button.setBackgroundColor({0, 0, 0, 255});
-  window.addWidget(&button);
-  
+  text_input.setPlaceholder("Enter your name");
+  text_input.setPos(500, 500);
+  text_input.setOnChangeCallback(callback);
+  window.addWidget(&text_input);
+
   window.mainLoop();
+  delete callback;
   return 0;
 }

@@ -14,8 +14,30 @@
   #include <vector>
   #include <tuple>
   #include <utility>
+  #include <set>
 
 class Widget;
+class Callback {
+  private:
+    std::function<void()> callable;
+  public:
+    Callback() = default;
+    template<typename Func, typename... Args>
+    void bind(Func&& func, Args&&... args) {
+      callable = [f = std::forward<Func>(func),
+        tpl = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+        std::apply(f, tpl);
+      };
+    }
+    void invoke() {
+      if (callable) {
+        callable();
+      } else {
+        printf("Callback is not bound.\n");
+      }
+    }
+};
+
 class Window {
   private:
   SDL_Window* window = nullptr;
@@ -68,22 +90,31 @@ class Window {
 
 class Widget {
   protected:
-  std::string id; 
-  int x = 0, y = 0, width = 0, height = 0;
-  TTF_Font* font = nullptr;
-  virtual void handleEvent(SDL_Event* event);
-  virtual void render(Window* window);
-  SDL_Renderer* getRenderer(Window* window) { return window->getRenderer(); }
+    std::string id; 
+    int x = 0, y = 0, width = 0, height = 0;
+    TTF_Font* font = nullptr;
+    Callback* callback = nullptr;
+    int zIndex = 0;
+
+    virtual void handleEvent(SDL_Event* event);
+    virtual void render(Window* window);
+    SDL_Renderer* getRenderer(Window* window) { return window->getRenderer(); }
+
   public:
-  void setGeometry(int x, int y, int width, int height) { this->x = x; this->y = y; this->width = width; this->height = height; }
-  void setPos(int x, int y) { this->x = x; this->y = y; }
-  void setX(int x) { this->x = x; }
-  void setY(int y) { this->y = y; }
+    Widget();
+    void setGeometry(int x, int y, int width, int height) { this->x = x; this->y = y; this->width = width; this->height = height; }
+    void setPos(int x, int y) { this->x = x; this->y = y; }
+    void setX(int x) { this->x = x; }
+    void setY(int y) { this->y = y; }
     void setWidth(int width) { this->width = width; }
     void setHeight(int height) { this->height = height; }
     void setId(std::string id) { this->id = id; }
     void setFont(TTF_Font* font) { this->font = font; }
-    
+    void setCallback(Callback* callback) { this->callback = callback; }
+    void setZIndex(int zIndex) { this->zIndex = zIndex; }
+
+    int getZIndex() { return this->zIndex; }
+    Callback* getCallback() { return this->callback; }
     int getX() { return this->x; }
     int getY() { return this->y; }
     int getWidth() { return this->width; }

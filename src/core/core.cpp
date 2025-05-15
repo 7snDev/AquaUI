@@ -11,10 +11,10 @@ void init() {
     throw std::runtime_error(TTF_GetError());
   }
 
-  // if (IMG_Init(IMG_INIT_PNG) != 0) {
-  //   printf("IMG init failed: %s\n", IMG_GetError());
-  //   throw std::runtime_error(IMG_GetError());
-  // }
+  if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
+    printf("IMG init failed: %s\n", IMG_GetError());
+    throw std::runtime_error(IMG_GetError());
+  }
 
   // if (Mix_Init(MIX_INIT_MP3) != 0) {
   //   printf("Mix init failed: %s\n", Mix_GetError());
@@ -127,9 +127,16 @@ Widget *Window::getWidget(std::string id) {
   return nullptr;
 }
 
+void sortWidgets(std::vector<Widget*>* widgets) {
+  std::sort(widgets->begin(), widgets->end(), [](Widget* a, Widget* b) {
+    return a->getZIndex() < b->getZIndex();
+  });
+}
+
 void Window::update() {
   SDL_SetRenderDrawColor(this->renderer, this->background_Color.r, this->background_Color.g, this->background_Color.b, this->background_Color.a);
   SDL_RenderClear(this->renderer);
+  sortWidgets(&widgets);
   for (auto widget : widgets) {
     widget->render(this);
   }
@@ -158,3 +165,6 @@ void Window::setFontSize(int fontSize) {
 
 void Widget::handleEvent(SDL_Event* event) {}
 void Widget::render(Window* window) {}
+Widget::Widget() {
+  this->callback = new Callback();
+}

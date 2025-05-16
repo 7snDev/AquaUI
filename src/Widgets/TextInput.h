@@ -11,6 +11,11 @@ class TextInput : public Label {
     std::string placeholder = "text input";
     bool isFocused = false;
     Callback* onChangeCallback = nullptr;
+    SDL_Color cursor_Color = {255, 255, 255, 255};
+    bool showCursor = true;
+    Uint32 lastBlinkTime = 0;
+    const Uint32 blinkInterval = 500;
+    void render(Window* window) override;
     void handleEvent(SDL_Event* event) override;
   public:
     TextInput() {
@@ -31,7 +36,9 @@ class TextInput : public Label {
     void setPlaceholder(std::string placeholder) { this->placeholder = placeholder; }
     void setFocused(bool isFocused) { this->isFocused = isFocused; }
     void setOnChangeCallback(Callback *callback) { this->onChangeCallback = callback; }
+    void setCursorColor(SDL_Color color) { this->cursor_Color = color; }
 
+    SDL_Color getCursorColor() { return this->cursor_Color; }
     Callback* getOnChangeCallback() { return this->onChangeCallback; }
     bool getFocused() { return this->isFocused; }
     std::string getPlaceholder() { return this->placeholder; }

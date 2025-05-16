@@ -108,7 +108,8 @@ void Label::handleEvent(SDL_Event* event) {
   int _height = height + getPadding() * 2 - border_Width[2] - border_Width[3];
   if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && event->button.x >= _x && event->button.x <= this->x + _width && event->button.y >= _y && event->button.y <= _y + _height)
   {
-    this->callback->invoke();
+    if (this->callback)
+      this->callback->invoke();
   } else if (event->type == SDL_MOUSEMOTION)
   {
     if (event->motion.x >= _x && event->motion.x <= this->x + _width && event->motion.y >= _y && event->motion.y <= _y + _height)

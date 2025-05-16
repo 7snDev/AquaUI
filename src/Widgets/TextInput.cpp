@@ -13,7 +13,7 @@ bool caps() {
     return false;
 }
 
-char SpishalKey(SDL_Keycode key) {
+char SpecialKey(SDL_Keycode key) {
   switch (key)
   {
   case SDLK_1:
@@ -92,13 +92,15 @@ char SpishalKey(SDL_Keycode key) {
     return '\t';
   case SDLK_SPACE:
     return ' ';
+  case SDLK_MINUS:
+    return '_';
   default:
-    printf("Spishal key not found.\n");
+    printf("Special key not found.\n");
   }
   return '\0';
 }
 
-bool isSpishalKey(SDL_Keycode key) {
+bool isSpecialKey(SDL_Keycode key) {
   switch (key)
   {
   case SDLK_1:
@@ -141,7 +143,7 @@ bool isSpishalKey(SDL_Keycode key) {
 }
 
 char Key(SDL_Keycode key) {
-  if (caps() && isSpishalKey(key)) return SpishalKey(key);
+  if (caps() && isSpecialKey(key)) return SpecialKey(key);
   else {
     if (caps())
       return toupper((char)key);
@@ -149,7 +151,7 @@ char Key(SDL_Keycode key) {
   }
 }
 
-bool isSpishal(SDL_Keycode key) {
+bool isSpecial(SDL_Keycode key) {
   if (
     key == SDLK_BACKSPACE ||
     key == SDLK_TAB ||
@@ -163,7 +165,30 @@ bool isSpishal(SDL_Keycode key) {
     key == SDLK_CAPSLOCK ||
     key == SDLK_LGUI ||
     key == SDLK_RGUI ||
-    key == SDLK_KP_ENTER
+    key == SDLK_KP_ENTER ||
+    key == SDLK_UP ||
+    key == SDLK_DOWN ||
+    key == SDLK_LEFT ||
+    key == SDLK_RIGHT ||
+    key == SDLK_HOME ||
+    key == SDLK_END ||
+    key == SDLK_F1 ||
+    key == SDLK_F2 ||
+    key == SDLK_F3 ||
+    key == SDLK_F4 ||
+    key == SDLK_F5 ||
+    key == SDLK_F6 ||
+    key == SDLK_F7 ||
+    key == SDLK_F8 ||
+    key == SDLK_F9 ||
+    key == SDLK_F10 ||
+    key == SDLK_F11 ||
+    key == SDLK_F12 ||
+    key == SDLK_PRINTSCREEN ||
+    key == SDLK_SCROLLLOCK ||
+    key == SDLK_PAUSE ||
+    key == SDLK_PAGEUP ||
+    key == SDLK_PAGEDOWN
   )
     return true;
   return false;
@@ -178,7 +203,8 @@ void TextInput::handleEvent(SDL_Event* event) {
   {
     if (event->button.button == SDL_BUTTON_LEFT && event->button.x >= _x && event->button.x <= this->x + _width && event->button.y >= _y && event->button.y <= _y + _height)
     {
-      this->callback->invoke();
+      if (this->callback)
+        this->callback->invoke();
       this->isFocused = true;
     } else {
       this->isFocused = false;
@@ -200,14 +226,42 @@ void TextInput::handleEvent(SDL_Event* event) {
       else if (text.length() == 1)
         text = " ";
     } else {
-      if (!isSpishal(key))
+      if (!isSpecial(key))
         text.push_back(Key(key));
     }
-    this->onChangeCallback->invoke();
+
+    if (onChangeCallback)
+      this->onChangeCallback->invoke();
+    this->showCursor = true;
+    this->lastBlinkTime = SDL_GetTicks();
   } else if (event->type == SDL_KEYUP)
   {
     if (event->key.keysym.sym == SDLK_CAPSLOCK)
       isPressedCaps = !isPressedCaps;
     Keys.erase(event->key.keysym.sym);
+  }
+}
+
+void TextInput::render(Window* window) {
+  Label::render(window);
+  if (isFocused) {
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime > lastBlinkTime + blinkInterval) {
+      showCursor = !showCursor;
+      lastBlinkTime = currentTime;
+    }
+    if (showCursor) {
+      int textW, textH;
+      TTF_SizeText(this->font, this->text.c_str(), &textW, &textH);
+      SDL_Renderer* renderer = getRenderer(window);
+      SDL_SetRenderDrawColor(renderer, cursor_Color.r, cursor_Color.g, cursor_Color.b , cursor_Color.a);
+      SDL_Rect cursorRect = {
+        this->x + textW + 2,
+        this->y ,
+        2,
+        this->height
+      };
+      SDL_RenderFillRect(renderer, &cursorRect);
+    }
   }
 }

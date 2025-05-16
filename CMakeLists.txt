@@ -22,7 +22,9 @@ include_directories(
 
 add_executable(app
   src/main.cpp
+  src/gui.cpp
   src/core/core.cpp
+  src/core/XMLBuilder.cpp
   src/Widgets/Label.cpp
   src/Widgets/Frame.cpp
   src/Widgets/TextInput.cpp

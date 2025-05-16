@@ -73,7 +73,13 @@ class Window {
   void setFontSize(int fontSize);
   void setBackgroundColor(SDL_Color color) { this->background_Color = color; }
   void addWidget(Widget* widget) { this->widgets.push_back(widget); }
-  
+  void setFullscreen(bool fullscreen) { this->fullscreen = fullscreen; }
+  void setResizable(bool resizable) { this->resizable = resizable; }
+  void setIcon(std::string icon) { this->icon = IMG_Load(icon.c_str()); }
+
+  SDL_Surface* getIcon() { return this->icon; }
+  bool getFullscreen() { return this->fullscreen; }
+  bool getResizable() { return this->resizable; }
   Widget* getWidget(std::string id);
   int getWidth() { return this->width; }
   int getHeight() { return this->height; }
@@ -126,7 +132,7 @@ class Widget {
 #endif
 
 #ifndef AQUAUI_VERSION
-  #define AQUAUI_VERSION "0.0.1 pre-alpha"
+  #define AQUAUI_VERSION "1.0.0-Beta"
 #endif
 
 #ifdef __linux__

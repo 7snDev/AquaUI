@@ -27,7 +27,7 @@ class Label : public Widget {
     void render(Window* window) override;
 
     public:
-    void setText(std::string text) { this->text = text; }
+    void setText(std::string text) { this->text = (text != "") ? text : " "; }
     void setColor(SDL_Color color) { this->text_Color = color; }
     void setBackgroundColor(SDL_Color color) { this->background_Color = color; }
     void setPadding(int padding);

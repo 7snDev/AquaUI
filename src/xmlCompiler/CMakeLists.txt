@@ -8,6 +8,6 @@ pkg_check_modules(TINYXML2 REQUIRED tinyxml2)
 include_directories(${TINYXML2_INCLUDE_DIRS})
 link_directories(${TINYXML2_LIBRARY_DIRS})
 
-add_executable(xmlc main.cpp)
+add_executable(xmlc compiler.cpp)
 
 target_link_libraries(xmlc ${TINYXML2_LIBRARIES})

@@ -1,4 +1,4 @@
-# AquaUI 🌊
+# AquaUI 🌊 (Canceld)
 **Lightweight C++20 GUI Labrary on top of SDL2 / TinyXML-2**
 
 **Cross-platform • MIT-licensed • beta-stage (v1.0.0-Beta)**
